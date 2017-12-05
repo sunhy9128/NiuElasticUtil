@@ -3,6 +3,7 @@ package utils;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class NiuQueryBuilders {
      * @param fieldName The name of the field
      * @param text      The value of the term
      */
-    public static QueryBuilder termQuery(String fieldName, Object text) {
+    public QueryBuilder termQuery(String fieldName, Object text) {
         QueryBuilder queryBuilder = QueryBuilders.termQuery(fieldName, text);
         return queryBuilder;
     }
@@ -25,13 +26,13 @@ public class NiuQueryBuilders {
      * @param fieldName The field name
      * @param text      The terms
      */
-    public static QueryBuilder termsQuery(String fieldName, String text) {
+    public QueryBuilder termsQuery(String fieldName, String text) {
         String[] split = text.split("");
         QueryBuilder queryBuilder = QueryBuilders.termsQuery(fieldName, split);
         return queryBuilder;
     }
 
-    public static QueryBuilder termsQuery(String text) {
+    public QueryBuilder termsQuery(String text) {
         String[] split = text.split("");
         QueryBuilder queryBuilder = QueryBuilders.termsQuery("_all", split);
         return queryBuilder;
@@ -40,7 +41,7 @@ public class NiuQueryBuilders {
     /**
      * A query that matches on all documents.
      */
-    public static QueryBuilder matchAllQuery() {
+    public QueryBuilder matchAllQuery() {
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         return queryBuilder;
     }
@@ -53,12 +54,12 @@ public class NiuQueryBuilders {
      * @param fieldName The field name.
      * @param text      The query text (to be analyzed).
      */
-    public static QueryBuilder matchQuery(String fieldName, Object text) {
+    public QueryBuilder matchQuery(String fieldName, Object text) {
         QueryBuilder queryBuilder = QueryBuilders.matchQuery(fieldName, text);
         return queryBuilder;
     }
 
-    public static QueryBuilder matchQuery(Object text) {
+    public QueryBuilder matchQuery(Object text) {
         QueryBuilder queryBuilder = QueryBuilders.matchQuery("_all", text);
         return queryBuilder;
     }
@@ -69,7 +70,7 @@ public class NiuQueryBuilders {
      * @param fieldNames The field names.
      * @param text       The query text (to be analyzed).
      */
-    public static QueryBuilder multiMatchQuery(Object text, String... fieldNames) {
+    public QueryBuilder multiMatchQuery(Object text, String... fieldNames) {
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(text, fieldNames);
         return queryBuilder;
     }
@@ -80,12 +81,12 @@ public class NiuQueryBuilders {
      *
      * @param queryString The query string to run
      */
-    public static QueryBuilder queryStringQuery(String queryString) {
+    public QueryBuilder queryStringQuery(String queryString) {
         QueryBuilder queryBuilder = org.elasticsearch.index.query.QueryBuilders.queryStringQuery(queryString).analyzer("ik_smart").defaultField("_all");
         return queryBuilder;
     }
 
-    public static QueryBuilder queryStringQuery(String queryString, String... fieldNames) {
+    public QueryBuilder queryStringQuery(String queryString, String... fieldNames) {
         Map<String, Float> map = new HashMap<String, Float>();
         for (String fieldName : fieldNames) {
             map.put(fieldName, Float.POSITIVE_INFINITY);

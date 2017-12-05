@@ -2,6 +2,8 @@ package utils;
 
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 
+import java.util.Date;
+
 public class NiuHighLightBuilders {
     private static HighlightBuilder highlightBuilder;
 

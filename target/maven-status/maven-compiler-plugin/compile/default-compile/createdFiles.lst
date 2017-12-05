@@ -1,3 +1,4 @@
 utils/NiuHighLightBuilders.class
-utils/NiuQueryBuilders.class
+utils/KeyConfig.class
 utils/ElasticUtils.class
+utils/NiuQueryBuilders.class
