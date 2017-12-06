@@ -67,11 +67,14 @@ public class ElasticUtils {
             SearchRequestBuilder searchRequestBuilder = this.client.prepareSearch(index).setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(queryBuilder).highlighter(highlightBuilder);
             SearchResponse searchResponse;
+            Long start=System.currentTimeMillis();
             if (size == null || size.isEmpty()) {
                 searchResponse = searchRequestBuilder.execute().actionGet();
             } else {
                 searchResponse = searchRequestBuilder.setSize(Integer.parseInt(size)).execute().actionGet();
             }
+            Long end=System.currentTimeMillis();
+            System.out.println("query time: "+(end-start));
             SearchHit[] hits = searchResponse.getHits().getHits();
             JSONArray jsonObjects = new JSONArray();
             for (int i = 0; i < hits.length; i++) {
@@ -140,13 +143,13 @@ public class ElasticUtils {
         }
         return search(queryBuilder, this.highlightBuilder, size);
     }
-
+//
 //    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
 //        JSONObject jsonObject = JSON.parseObject("{\n" +
 //                "\t\n" +
 //                "\t\"query\": \"李\",\n" +
 //                "\t\"queryBuilder\":{\n" +
-//                "\t\t\"mode\":\"match\",\n" +
+//                "\t\t\"mode\":\"term\",\n" +
 //                "\t\t\"size\":5\n" +
 //                "\t\t},\n" +
 //                "\t\t\"highLight\":\"strong\"\n" +

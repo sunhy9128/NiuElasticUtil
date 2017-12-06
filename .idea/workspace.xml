@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a4395db3-b635-4882-b206-2968975b761e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/utils/ElasticUtils.java" afterPath="$PROJECT_DIR$/src/main/java/utils/ElasticUtils.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/utils/NiuQueryBuilders.java" afterPath="$PROJECT_DIR$/src/main/java/utils/NiuQueryBuilders.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -18,15 +19,12 @@
       <file leaf-file-name="ElasticUtils.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/utils/ElasticUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="213">
-              <caret line="143" column="0" lean-forward="false" selection-start-line="143" selection-start-column="2" selection-end-line="155" selection-end-column="7" />
+            <state relative-caret-position="374">
+              <caret line="76" column="56" lean-forward="false" selection-start-line="76" selection-start-column="56" selection-end-line="76" selection-end-column="56" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="initializer##0;class#ElasticUtils#0" expanded="false" />
-                <element signature="method#search#0;class#ElasticUtils#0" expanded="false" />
-                <element signature="method#search#1;class#ElasticUtils#0" expanded="false" />
                 <element signature="method#createIndex#0;class#ElasticUtils#0" expanded="false" />
-                <element signature="method#actionQuery#0;class#ElasticUtils#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -50,11 +48,11 @@
       <file leaf-file-name="NiuQueryBuilders.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/utils/NiuQueryBuilders.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="350">
-              <caret line="43" column="40" lean-forward="false" selection-start-line="43" selection-start-column="40" selection-end-line="43" selection-end-column="40" />
+            <state relative-caret-position="176">
+              <caret line="21" column="47" lean-forward="false" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
               <folding>
                 <element signature="docComment;method#termQuery#0;class#NiuQueryBuilders#0" expanded="false" />
-                <element signature="method#termQuery#0;class#NiuQueryBuilders#0" expanded="false" />
+                <element signature="method#termQuery#1;class#NiuQueryBuilders#0" expanded="false" />
                 <element signature="method#termsQuery#0;class#NiuQueryBuilders#0" expanded="false" />
                 <element signature="method#termsQuery#1;class#NiuQueryBuilders#0" expanded="false" />
                 <element signature="method#matchAllQuery#0;class#NiuQueryBuilders#0" expanded="false" />
@@ -63,7 +61,7 @@
                 <element signature="method#multiMatchQuery#0;class#NiuQueryBuilders#0" expanded="false" />
                 <element signature="method#queryStringQuery#0;class#NiuQueryBuilders#0" expanded="false" />
                 <element signature="method#queryStringQuery#1;class#NiuQueryBuilders#0" expanded="false" />
-                <element signature="e#3208#3223#0" expanded="true" />
+                <element signature="e#3367#3382#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -93,8 +91,8 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/utils/KeyConfig.java" />
         <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
-        <option value="$PROJECT_DIR$/src/main/java/utils/NiuQueryBuilders.java" />
         <option value="$PROJECT_DIR$/src/main/java/utils/NiuHighLightBuilders.java" />
+        <option value="$PROJECT_DIR$/src/main/java/utils/NiuQueryBuilders.java" />
         <option value="$PROJECT_DIR$/src/main/java/utils/ElasticUtils.java" />
       </list>
     </option>
@@ -372,15 +370,16 @@
       <option name="presentableId" value="Default" />
       <updated>1512454159385</updated>
       <workItem from="1512454164301" duration="12307000" />
-      <workItem from="1512530628429" duration="9415000" />
+      <workItem from="1512530628429" duration="10508000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="21722000" />
+    <option name="totallyTimeSpent" value="22815000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="28" width="1366" height="706" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -426,8 +425,14 @@
           <properties />
           <option name="timeStamp" value="9" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/utils/ElasticUtils.java</url>
+          <line>127</line>
+          <properties />
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="11" />
+      <option name="time" value="13" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -439,10 +444,7 @@
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="initializer##0;class#ElasticUtils#0" expanded="false" />
-            <element signature="method#search#0;class#ElasticUtils#0" expanded="false" />
-            <element signature="method#search#1;class#ElasticUtils#0" expanded="false" />
             <element signature="method#createIndex#0;class#ElasticUtils#0" expanded="false" />
-            <element signature="method#actionQuery#0;class#ElasticUtils#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -501,7 +503,7 @@
           <caret line="28" column="64" lean-forward="false" selection-start-line="28" selection-start-column="60" selection-end-line="28" selection-end-column="64" />
           <folding>
             <element signature="docComment;method#termQuery#0;class#NiuQueryBuilders#0" expanded="false" />
-            <element signature="method#termQuery#0;class#NiuQueryBuilders#0" expanded="false" />
+            <element signature="method#termQuery#1;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#termsQuery#0;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#termsQuery#1;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#matchAllQuery#0;class#NiuQueryBuilders#0" expanded="false" />
@@ -510,7 +512,7 @@
             <element signature="method#multiMatchQuery#0;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#queryStringQuery#0;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#queryStringQuery#1;class#NiuQueryBuilders#0" expanded="false" />
-            <element signature="e#3208#3223#0" expanded="true" />
+            <element signature="e#3367#3382#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -585,11 +587,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/utils/NiuQueryBuilders.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="43" column="40" lean-forward="false" selection-start-line="43" selection-start-column="40" selection-end-line="43" selection-end-column="40" />
+        <state relative-caret-position="176">
+          <caret line="21" column="47" lean-forward="false" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
           <folding>
             <element signature="docComment;method#termQuery#0;class#NiuQueryBuilders#0" expanded="false" />
-            <element signature="method#termQuery#0;class#NiuQueryBuilders#0" expanded="false" />
+            <element signature="method#termQuery#1;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#termsQuery#0;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#termsQuery#1;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#matchAllQuery#0;class#NiuQueryBuilders#0" expanded="false" />
@@ -598,22 +600,19 @@
             <element signature="method#multiMatchQuery#0;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#queryStringQuery#0;class#NiuQueryBuilders#0" expanded="false" />
             <element signature="method#queryStringQuery#1;class#NiuQueryBuilders#0" expanded="false" />
-            <element signature="e#3208#3223#0" expanded="true" />
+            <element signature="e#3367#3382#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/utils/ElasticUtils.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="213">
-          <caret line="143" column="0" lean-forward="false" selection-start-line="143" selection-start-column="2" selection-end-line="155" selection-end-column="7" />
+        <state relative-caret-position="374">
+          <caret line="76" column="56" lean-forward="false" selection-start-line="76" selection-start-column="56" selection-end-line="76" selection-end-column="56" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="initializer##0;class#ElasticUtils#0" expanded="false" />
-            <element signature="method#search#0;class#ElasticUtils#0" expanded="false" />
-            <element signature="method#search#1;class#ElasticUtils#0" expanded="false" />
             <element signature="method#createIndex#0;class#ElasticUtils#0" expanded="false" />
-            <element signature="method#actionQuery#0;class#ElasticUtils#0" expanded="false" />
           </folding>
         </state>
       </provider>

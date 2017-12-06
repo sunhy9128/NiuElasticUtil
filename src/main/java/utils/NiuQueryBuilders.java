@@ -19,6 +19,10 @@ public class NiuQueryBuilders {
         return queryBuilder;
     }
 
+    public QueryBuilder termQuery(String text) {
+        QueryBuilder queryBuilder = QueryBuilders.termQuery("_all", text);
+        return queryBuilder;
+    }
     /**
      * A filer for a field based on several terms matching on any of them.
      * Can be used as full-text Query with Chinese character.
