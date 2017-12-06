@@ -1,6 +1,5 @@
 package utils;
 
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -11,7 +10,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -19,10 +17,7 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.lang.reflect.Field;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -31,24 +26,17 @@ import java.util.*;
 
 
 public class ElasticUtils {
+
     private TransportClient client;
+
     private String clusterName;
+
     private String host;
+
     private HighlightBuilder highlightBuilder;
 
-    private void init() {
+    {
         try {
-            Settings settings = Settings.builder().put("cluster.name", this.clusterName).build();
-            this.client = new PreBuiltTransportClient(settings)
-                    .addTransportAddresses(new InetSocketTransportAddress(InetAddress.getByName(this.host), 9300));
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private JSONObject search(String index, QueryBuilder queryBuilder, HighlightBuilder highlightBuilder, String size) {
-        try {
-            JSONObject resultJson = new JSONObject();
             Properties properties = new Properties();
             InputStream inputStream = new BufferedInputStream(new FileInputStream("src/main/resources/application.properties"));
             properties.load(inputStream);
@@ -61,7 +49,21 @@ public class ElasticUtils {
                     this.host = properties.getProperty(key);
                 }
             }
-            init();
+            Settings settings = Settings.builder().put("cluster.name", this.clusterName).build();
+            this.client = new PreBuiltTransportClient(settings)
+                    .addTransportAddresses(new InetSocketTransportAddress(InetAddress.getByName(this.host), 9300));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JSONObject search(String index, QueryBuilder queryBuilder, HighlightBuilder highlightBuilder, String size) {
+        try {
+            JSONObject resultJson = new JSONObject();
             SearchRequestBuilder searchRequestBuilder = this.client.prepareSearch(index).setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(queryBuilder).highlighter(highlightBuilder);
             SearchResponse searchResponse;
@@ -74,7 +76,6 @@ public class ElasticUtils {
             JSONArray jsonObjects = new JSONArray();
             for (int i = 0; i < hits.length; i++) {
                 JSONObject object = new JSONObject();
-                StringBuffer s = new StringBuffer();
                 Map<String, HighlightField> highlightFields = hits[i].getHighlightFields();
                 List<JSONObject> list = new ArrayList<>();
                 for (String key : highlightFields.keySet()) {
@@ -90,7 +91,6 @@ public class ElasticUtils {
             }
             resultJson.put("total", hits.length);
             resultJson.put("data", jsonObjects);
-            client.close();
             return resultJson;
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,7 +105,6 @@ public class ElasticUtils {
     public void createIndex(String indexName) {
         try {
             CreateIndexResponse indexResponse = this.client.admin().indices().prepareCreate(indexName).get();
-            System.out.println(indexResponse.isAcknowledged());
         } catch (ElasticsearchException e) {
             e.printStackTrace();
         }
@@ -119,12 +118,11 @@ public class ElasticUtils {
         String fieldName = queryBuilderObject.getString("fieldName");
         NiuHighLightBuilders niuHighLightBuilders = new NiuHighLightBuilders();
         Object highLight = jsonObject.get("highLight");
-        System.out.println(highLight.getClass());
         if (highLight != null) {
             if (highLight.getClass().equals(JSONObject.class)) {
-                this.highlightBuilder = niuHighLightBuilders.highlightBuilder(((JSONObject)highLight).getString("preTags"), ((JSONObject)highLight).getString("postTags"));
-            }else if (highLight.getClass().equals(String.class)){
-                this.highlightBuilder = (HighlightBuilder) niuHighLightBuilders.getClass().getField(highLight.toString().toUpperCase()+"_HIGHLIGHT").get(niuHighLightBuilders);
+                this.highlightBuilder = niuHighLightBuilders.highlightBuilder(((JSONObject) highLight).getString("preTags"), ((JSONObject) highLight).getString("postTags"));
+            } else if (highLight.getClass().equals(String.class)) {
+                this.highlightBuilder = (HighlightBuilder) niuHighLightBuilders.getClass().getField(highLight.toString().toUpperCase() + "_HIGHLIGHT").get(niuHighLightBuilders);
             }
         } else {
             this.highlightBuilder = niuHighLightBuilders.DEFAULT_HIGHLIGHT;
