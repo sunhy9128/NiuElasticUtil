@@ -22,6 +22,7 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -101,10 +102,6 @@ public class ElasticUtils {
         return this.search("*", queryBuilder, highlightBuilder, size);
     }
 
-    public JSONObject search(QueryBuilder queryBuilder, String size) {
-        return this.search(queryBuilder, NiuHighLightBuilders.DEFAULT_HIGHLIGHT, size);
-    }
-
     public void createIndex(String indexName) {
         try {
             CreateIndexResponse indexResponse = this.client.admin().indices().prepareCreate(indexName).get();
@@ -114,16 +111,21 @@ public class ElasticUtils {
         }
     }
 
-    public JSONObject actionQuery(JSONObject jsonObject) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public JSONObject actionQuery(JSONObject jsonObject) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchFieldException {
         String query = jsonObject.getString("query");
         JSONObject queryBuilderObject = jsonObject.getJSONObject("queryBuilder");
         String mode = queryBuilderObject.getString("mode") + "Query";
         String size = queryBuilderObject.getString("size");
         String fieldName = queryBuilderObject.getString("fieldName");
         NiuHighLightBuilders niuHighLightBuilders = new NiuHighLightBuilders();
-        JSONObject highLight = jsonObject.getJSONObject("highLight");
+        Object highLight = jsonObject.get("highLight");
+        System.out.println(highLight.getClass());
         if (highLight != null) {
-            this.highlightBuilder = niuHighLightBuilders.highlightBuilder(highLight.getString("preTags"), highLight.getString("postTags"));
+            if (highLight.getClass().equals(JSONObject.class)) {
+                this.highlightBuilder = niuHighLightBuilders.highlightBuilder(((JSONObject)highLight).getString("preTags"), ((JSONObject)highLight).getString("postTags"));
+            }else if (highLight.getClass().equals(String.class)){
+                this.highlightBuilder = (HighlightBuilder) niuHighLightBuilders.getClass().getField(highLight.toString().toUpperCase()+"_HIGHLIGHT").get(niuHighLightBuilders);
+            }
         } else {
             this.highlightBuilder = niuHighLightBuilders.DEFAULT_HIGHLIGHT;
         }
@@ -141,7 +143,7 @@ public class ElasticUtils {
         return search(queryBuilder, this.highlightBuilder, size);
     }
 
-//    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+//    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
 //        JSONObject jsonObject = JSON.parseObject("{\n" +
 //                "\t\n" +
 //                "\t\"query\": \"李\",\n" +
@@ -149,10 +151,9 @@ public class ElasticUtils {
 //                "\t\t\"mode\":\"match\",\n" +
 //                "\t\t\"size\":5\n" +
 //                "\t\t},\n" +
-//                "\t\t\"highLight\":null\n" +
+//                "\t\t\"highLight\":\"strong\"\n" +
 //                "}");
 //        ElasticUtils elasticUtils = new ElasticUtils();
-//
 //        elasticUtils.actionQuery(jsonObject).getJSONArray("data").forEach(System.out::println);
 //    }
 }

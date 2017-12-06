@@ -2,18 +2,19 @@ package utils;
 
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
 public class NiuHighLightBuilders {
     private HighlightBuilder highlightBuilder;
 
-    public static HighlightBuilder STRONG_HIGHLIGHT;
+    public  HighlightBuilder STRONG_HIGHLIGHT;
 
-    public static HighlightBuilder DEFAULT_HIGHLIGHT;
+    public  HighlightBuilder DEFAULT_HIGHLIGHT;
 
-    public static HighlightBuilder BLACK_HIGHLIGHT;
+    public  HighlightBuilder BLACK_HIGHLIGHT;
 
-    public static HighlightBuilder INCLINE_HIGHLIGHT;
+    public  HighlightBuilder INCLINE_HIGHLIGHT;
 
     {
         this.STRONG_HIGHLIGHT = highlightBuilder("*", "<strong>", "</strong>");
