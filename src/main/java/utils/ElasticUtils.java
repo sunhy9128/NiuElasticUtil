@@ -30,12 +30,12 @@ import java.util.*;
 
 
 public class ElasticUtils {
-
     private TransportClient client;
     private String clusterName;
     private String host;
+    private HighlightBuilder highlightBuilder;
 
-    public void init(){
+    private void init() {
         try {
             Settings settings = Settings.builder().put("cluster.name", this.clusterName).build();
             this.client = new PreBuiltTransportClient(settings)
@@ -45,66 +45,64 @@ public class ElasticUtils {
         }
     }
 
-    public JSONObject search(String index, QueryBuilder queryBuilder, HighlightBuilder highlightBuilder,String size) {
+    private JSONObject search(String index, QueryBuilder queryBuilder, HighlightBuilder highlightBuilder, String size) {
         try {
-            Properties properties=new Properties();
+            JSONObject resultJson = new JSONObject();
+            Properties properties = new Properties();
             InputStream inputStream = new BufferedInputStream(new FileInputStream("src/main/resources/application.properties"));
             properties.load(inputStream);
             Iterator<String> iterator = properties.stringPropertyNames().iterator();
-            while (iterator.hasNext()){
-                String key=iterator.next();
-                System.out.println(key);
-                if (key.equals("elastic.clusterName")){
-                    this.clusterName=properties.getProperty(key);
-                }
-                else if (key.equals("elastic.host")){
-                    this.host=properties.getProperty(key);
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                if (key.equals("elastic.clusterName")) {
+                    this.clusterName = properties.getProperty(key);
+                } else if (key.equals("elastic.host")) {
+                    this.host = properties.getProperty(key);
                 }
             }
             init();
             SearchRequestBuilder searchRequestBuilder = this.client.prepareSearch(index).setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(queryBuilder).highlighter(highlightBuilder);
             SearchResponse searchResponse;
-            if (size==null){
-                searchResponse=searchRequestBuilder.execute().actionGet();
-            }
-            else {
-                searchResponse=searchRequestBuilder.setSize(Integer.parseInt(size)).execute().actionGet();
+            if (size == null || size.isEmpty()) {
+                searchResponse = searchRequestBuilder.execute().actionGet();
+            } else {
+                searchResponse = searchRequestBuilder.setSize(Integer.parseInt(size)).execute().actionGet();
             }
             SearchHit[] hits = searchResponse.getHits().getHits();
-            JSONObject jsonObject = new JSONObject();
             JSONArray jsonObjects = new JSONArray();
             for (int i = 0; i < hits.length; i++) {
                 JSONObject object = new JSONObject();
                 StringBuffer s = new StringBuffer();
                 Map<String, HighlightField> highlightFields = hits[i].getHighlightFields();
-                String high = "";
-                for (String s1 : highlightFields.keySet()) {
-                    Text[] fragments = highlightFields.get(s1).getFragments();
-                    for (Text fragment : fragments) {
-                        high += s1 + ": " + fragment + " ";
-                    }
+                List<JSONObject> list = new ArrayList<>();
+                for (String key : highlightFields.keySet()) {
+                    JSONObject highObject = new JSONObject();
+                    highObject.put("field", key);
+                    highObject.put("value", highlightFields.get(key).getFragments()[0].toString());
+                    list.add(highObject);
                 }
-                object.put("shard", i);
+                object.put("shard", i + 1);
                 object.put("source", hits[i].getSource());
-                object.put("highlight", high.toString());
+                object.put("highlight", list);
                 jsonObjects.add(object);
             }
-            jsonObject.put("result", jsonObjects);
+            resultJson.put("total", hits.length);
+            resultJson.put("data", jsonObjects);
             client.close();
-            return jsonObject;
+            return resultJson;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public JSONObject search(QueryBuilder queryBuilder, HighlightBuilder highlightBuilder,String size) {
-        return this.search("*", queryBuilder, highlightBuilder,size);
+    private JSONObject search(QueryBuilder queryBuilder, HighlightBuilder highlightBuilder, String size) {
+        return this.search("*", queryBuilder, highlightBuilder, size);
     }
 
-    public JSONObject search(QueryBuilder queryBuilder,String size) {
-        return this.search(queryBuilder, NiuHighLightBuilders.DEFAULT_HIGHLIGHT,size);
+    public JSONObject search(QueryBuilder queryBuilder, String size) {
+        return this.search(queryBuilder, NiuHighLightBuilders.DEFAULT_HIGHLIGHT, size);
     }
 
     public void createIndex(String indexName) {
@@ -116,24 +114,45 @@ public class ElasticUtils {
         }
     }
 
-    public String actionQuery(JSONObject jsonObject) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public JSONObject actionQuery(JSONObject jsonObject) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         String query = jsonObject.getString("query");
         JSONObject queryBuilderObject = jsonObject.getJSONObject("queryBuilder");
-        JSONObject highLight = jsonObject.getJSONObject("highLight");
         String mode = queryBuilderObject.getString("mode") + "Query";
-        String size=queryBuilderObject.getString("size");
+        String size = queryBuilderObject.getString("size");
         String fieldName = queryBuilderObject.getString("fieldName");
-        NiuHighLightBuilders niuHighLightBuilders=new NiuHighLightBuilders();
-        HighlightBuilder highlightBuilder = niuHighLightBuilders.highlightBuilder(highLight.getString("preTags"), highLight.getString("postTags"));
-        QueryBuilder queryBuilder;
-        if (fieldName == null) {
+        NiuHighLightBuilders niuHighLightBuilders = new NiuHighLightBuilders();
+        JSONObject highLight = jsonObject.getJSONObject("highLight");
+        if (highLight != null) {
+            this.highlightBuilder = niuHighLightBuilders.highlightBuilder(highLight.getString("preTags"), highLight.getString("postTags"));
+        } else {
+            this.highlightBuilder = niuHighLightBuilders.DEFAULT_HIGHLIGHT;
+        }
+        QueryBuilder queryBuilder = null;
+        if (query == null || query.isEmpty()) {
+            Method method = NiuQueryBuilders.class.getMethod(mode);
+            queryBuilder = (QueryBuilder) method.invoke(NiuQueryBuilders.class.newInstance());
+        } else if ((fieldName == null || fieldName.isEmpty()) && query != null) {
             Method queryMethod = NiuQueryBuilders.class.getMethod(mode, new Class[]{String.class});
-            queryBuilder = (QueryBuilder) queryMethod.invoke(NiuQueryBuilders.class.newInstance(),new String[]{query});
+            queryBuilder = (QueryBuilder) queryMethod.invoke(NiuQueryBuilders.class.newInstance(), new String[]{query});
+        } else if ((fieldName != null && !fieldName.isEmpty()) && query != null) {
+            Method queryMethod = NiuQueryBuilders.class.getMethod(mode, new Class[]{String.class, String.class});
+            queryBuilder = (QueryBuilder) queryMethod.invoke(NiuQueryBuilders.class.newInstance(), new String[]{fieldName, query});
         }
-        else {
-            Method queryMethod= NiuQueryBuilders.class.getMethod(mode,new Class[]{String.class,String.class});
-            queryBuilder = (QueryBuilder) queryMethod.invoke(NiuQueryBuilders.class.newInstance(),new String[]{fieldName,query});
-        }
-        return search(queryBuilder, highlightBuilder,size).getJSONArray("result").toString();
+        return search(queryBuilder, this.highlightBuilder, size);
     }
+
+//    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+//        JSONObject jsonObject = JSON.parseObject("{\n" +
+//                "\t\n" +
+//                "\t\"query\": \"李\",\n" +
+//                "\t\"queryBuilder\":{\n" +
+//                "\t\t\"mode\":\"match\",\n" +
+//                "\t\t\"size\":5\n" +
+//                "\t\t},\n" +
+//                "\t\t\"highLight\":null\n" +
+//                "}");
+//        ElasticUtils elasticUtils = new ElasticUtils();
+//
+//        elasticUtils.actionQuery(jsonObject).getJSONArray("data").forEach(System.out::println);
+//    }
 }

@@ -14,7 +14,7 @@ public class NiuQueryBuilders {
      * @param fieldName The name of the field
      * @param text      The value of the term
      */
-    public QueryBuilder termQuery(String fieldName, Object text) {
+    public QueryBuilder termQuery(String fieldName, String text) {
         QueryBuilder queryBuilder = QueryBuilders.termQuery(fieldName, text);
         return queryBuilder;
     }
@@ -54,12 +54,12 @@ public class NiuQueryBuilders {
      * @param fieldName The field name.
      * @param text      The query text (to be analyzed).
      */
-    public QueryBuilder matchQuery(String fieldName, Object text) {
+    public QueryBuilder matchQuery(String fieldName, String text) {
         QueryBuilder queryBuilder = QueryBuilders.matchQuery(fieldName, text);
         return queryBuilder;
     }
 
-    public QueryBuilder matchQuery(Object text) {
+    public QueryBuilder matchQuery(String text) {
         QueryBuilder queryBuilder = QueryBuilders.matchQuery("_all", text);
         return queryBuilder;
     }
@@ -70,7 +70,7 @@ public class NiuQueryBuilders {
      * @param fieldNames The field names.
      * @param text       The query text (to be analyzed).
      */
-    public QueryBuilder multiMatchQuery(Object text, String... fieldNames) {
+    public QueryBuilder multiMatchQuery(String text, String... fieldNames) {
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(text, fieldNames);
         return queryBuilder;
     }
