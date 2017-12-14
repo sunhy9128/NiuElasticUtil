@@ -3,6 +3,8 @@ package utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -35,6 +37,8 @@ public class ElasticUtils {
 
     private HighlightBuilder highlightBuilder;
 
+    private static final Logger LOGGER = LogManager.getLogger(ElasticUtils.class.getName());
+
     {
         try {
             Properties properties = new Properties();
@@ -56,8 +60,10 @@ public class ElasticUtils {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            LOGGER.error("properties 文件未找到");
         } catch (IOException e) {
             e.printStackTrace();
+            LOGGER.error("inputstream error");
         }
     }
 
@@ -74,7 +80,7 @@ public class ElasticUtils {
                 searchResponse = searchRequestBuilder.setSize(Integer.parseInt(size)).execute().actionGet();
             }
             Long end=System.currentTimeMillis();
-            System.out.println("query time: "+(end-start));
+            LOGGER.error("query time"+(end-start)+"ms");
             SearchHit[] hits = searchResponse.getHits().getHits();
             JSONArray jsonObjects = new JSONArray();
             for (int i = 0; i < hits.length; i++) {
@@ -143,7 +149,7 @@ public class ElasticUtils {
         }
         return search(queryBuilder, this.highlightBuilder, size);
     }
-//
+
 //    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
 //        JSONObject jsonObject = JSON.parseObject("{\n" +
 //                "\t\n" +
